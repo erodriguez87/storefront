@@ -26,6 +26,7 @@
         for (i=0;i<res.length; i++){
           console.log(`ID: ${res[i].item_id} | Product: ${res[i].product_name} | Price: $${res[i].price}`)
         }
+        console.log(`\n`);
         buyWhat();
     });
   }
@@ -60,17 +61,15 @@
             chosenItem = res[i];
           }
         }
-        console.log('===============You Chose a================');
-        console.log('==========================================')  
+        console.log('\n===============You Chose a================');
+        console.log('==========================================\n')  
         console.log(`ID: ${chosenItem.item_id} | Product: ${chosenItem.product_name} | Price: $${chosenItem.price}`)
 
         figgy(chosenItem.product_name);
-        figgy('X');
-        figgy(answer.qty);
-        checkQty(answer.qty,chosenItem.item_id);
+        checkQty(chosenItem.item_id,answer.qty,chosenItem.product_name,chosenItem.price,chosenItem.stock_quantity);
+        
+      });
     });
-  });
-  
   }
 
 //the figlet drawings function
@@ -86,12 +85,34 @@
   }
 
 //check quantity before the order goes through
-  function checkQty(qty,item){
-    connection.query("SELECT * FROM products;", function(err, res) {
-      if (err) throw err;
-      console.log('inside check');
-        console.log(item);
-        console.log(qty);
-        connection.end();
-   });
+  function checkQty(id,qty,product,price,available){
+    var canBuy = false;
+    var remaining = parseInt(available) - parseInt(qty)
+      if (remaining >=0){
+        canBuy = true;
+        console.log(`You are in great luck! There are enough available for your order\n`);
+        console.log(`You are buying ${qty} of ${product} for a total price of ${qty*price}\n`);
+          connection.query(`UPDATE products SET stock_quantity = '${remaining}' WHERE item_id='${id}';`, function(err, res) {
+            if (err) throw err;
+              });
+
+          // add orders to a second table
+          connection.query(
+            "INSERT INTO bamazon.orders ?",
+              {
+                item_id: '1',
+                product_name: product,
+                department_name: 'tech',
+                price: price,
+                stock_quantity: qty
+              },
+              function(err, res) {
+                console.log(`${qty} of ${product} purchased\n`)
+              }          
+          );
+      } else {
+        console.log('Sorry, we do not have enough in stock to fulfill your order');
+      }
+
+      connection.end();
   }
