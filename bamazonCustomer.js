@@ -21,16 +21,30 @@
 
 // find the products and display products from sql. call the buying function
   function readProducts() {
-    connection.query("SELECT * FROM products;",function(err,res) {
-        if (err) throw err;
-        for (i=0;i<res.length; i++){
-          console.log(`ID: ${res[i].item_id} | Product: ${res[i].product_name} | Price: $${res[i].price}`)
-        }
-        console.log(`\n`);
-        buyWhat();
+    inquirer
+    .prompt([
+      {
+        name: "enter",
+        type: "list",
+        choices: ['yes','no'],
+        message: "Welcome to bAmazon. Would you like to make a purchase?"
+      }, 
+    ])
+    .then(function(answer) {
+      if(answer.enter === 'yes'){
+        connection.query("SELECT * FROM products;",function(err,res) {
+          if (err) throw err;
+          for (i=0;i<res.length; i++){
+            console.log(`ID: ${res[i].item_id} | Product: ${res[i].product_name} | Price: $${res[i].price}`)
+          }
+          console.log(`\n`);
+          buyWhat();
+        });
+      } else {
+        console.log('Bye for now!');
+      };
     });
-  }
-
+  };
 //Let the user pick what they want to buy. 
   function buyWhat(){
     //read from sql and create an array of items the user can pick from
@@ -91,28 +105,12 @@
       if (remaining >=0){
         canBuy = true;
         console.log(`You are in great luck! There are enough available for your order\n`);
-        console.log(`You are buying ${qty} of ${product} for a total price of ${qty*price}\n`);
+        console.log(`You are buying ${qty} of ${product} for a total price of $${qty*price}\n`);
           connection.query(`UPDATE products SET stock_quantity = '${remaining}' WHERE item_id='${id}';`, function(err, res) {
             if (err) throw err;
               });
-
-          // add orders to a second table
-          connection.query(
-            "INSERT INTO bamazon.orders ?",
-              {
-                item_id: '1',
-                product_name: product,
-                department_name: 'tech',
-                price: price,
-                stock_quantity: qty
-              },
-              function(err, res) {
-                console.log(`${qty} of ${product} purchased\n`)
-              }          
-          );
       } else {
         console.log('Sorry, we do not have enough in stock to fulfill your order');
       }
-
       connection.end();
   }
