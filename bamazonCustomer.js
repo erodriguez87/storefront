@@ -59,8 +59,7 @@
       .prompt([
         {
           name: "choices",
-          type: "list",
-          choices: ['1','2','3','4','5','6','7'],
+          type: "input",
           message: "These are the items available. Which one would you like to buy?"
         }, {
           type: 'input', 

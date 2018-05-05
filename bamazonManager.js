@@ -157,13 +157,13 @@
     // INSERT INTO `bamazon`.`products` (`item_id`, `product_name`, `department_name`, `year`, `price`, `stock_quantity`) VALUES ('10', 'Cup', 'Kitchen', '2018', '4', '200');
 
 //the figlet drawings function
-function figgy(item){
-  figlet(item, function(err, data) {
-    if (err) {
-        console.log('Something went wrong...');
-        console.dir(err);
-        return;
-    }
-    console.log(data)
-  });
-}
+  function figgy(item){
+    figlet(item, function(err, data) {
+      if (err) {
+          console.log('Something went wrong...');
+          console.dir(err);
+          return;
+      }
+      console.log(data)
+    });
+  }
